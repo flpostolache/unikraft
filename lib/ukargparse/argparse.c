@@ -37,7 +37,7 @@
 
 static void left_shift(char *buf, __sz index, __sz maxlen)
 {
-	while(buf[index] != '\0' && index < maxlen) {
+	while (buf[index] != '\0' && index < maxlen) {
 		buf[index] = buf[index + 1];
 		index++;
 	}
@@ -91,7 +91,7 @@ int uk_argnparse(char *argb, __sz maxlen, char *argv[], int maxcount)
 			goto regularchar;
 
 		default:
-		regularchar:
+regularchar:
 			/* any character */
 			if (prev_wspace) {
 				argv[argc++] = &argb[i];
