@@ -127,13 +127,11 @@ UK_SYSCALL_R_DEFINE(int, uname, struct utsname *, buf)
 
 UK_SYSCALL_R_DEFINE(int, sethostname, const char*, name, size_t, len)
 {
-	if (name == NULL) {
+	if (name == NULL)
 		return -EFAULT;
-	}
 
-	if (len > sizeof(utsname.nodename)) {
+	if (len > sizeof(utsname.nodename))
 		return -EINVAL;
-	}
 
 	strncpy(utsname.nodename, name, len);
 	if (len < sizeof(utsname.nodename))
