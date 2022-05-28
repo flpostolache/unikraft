@@ -66,9 +66,8 @@ UK_SYSCALL_R_DEFINE(int, nanosleep, const struct timespec*, req, struct timespec
 {
 	__nsec before, after, diff, nsec;
 
-	if (!req || req->tv_nsec < 0 || req->tv_nsec > 999999999) {
+	if (!req || req->tv_nsec < 0 || req->tv_nsec > 999999999)
 		return -EINVAL;
-	}
 
 	nsec = (__nsec) req->tv_sec * 1000000000L;
 	nsec += req->tv_nsec;
