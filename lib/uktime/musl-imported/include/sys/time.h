@@ -16,7 +16,7 @@ extern "C" {
 #include_next <sys/time.h>
 #endif
 
-int gettimeofday (struct timeval *__restrict, void *__restrict);
+int gettimeofday(struct timeval *__restrict, void *__restrict);
 
 #define ITIMER_REAL    0
 #define ITIMER_VIRTUAL 1
@@ -27,9 +27,9 @@ struct itimerval {
 	struct timeval it_value;
 };
 
-int getitimer (int, struct itimerval *);
-int setitimer (int, const struct itimerval *__restrict, struct itimerval *__restrict);
-int utimes (const char *, const struct timeval *);
+int getitimer(int, struct itimerval *);
+int setitimer(int, const struct itimerval *__restrict, struct itimerval *__restrict);
+int utimes(const char *, const struct timeval *);
 
 #if defined(_GNU_SOURCE) || defined(_BSD_SOURCE)
 struct timezone {
@@ -40,7 +40,7 @@ int futimes(int, const struct timeval *);
 int futimesat(int, const char *, const struct timeval *);
 int lutimes(const char *, const struct timeval *);
 int settimeofday(const struct timeval *, const struct timezone *);
-int adjtime (const struct timeval *, struct timeval *);
+int adjtime(const struct timeval *, struct timeval *);
 #define timerisset(t) ((t)->tv_sec || (t)->tv_usec)
 #define timerclear(t) ((t)->tv_sec = (t)->tv_usec = 0)
 #define timercmp(s,t,op) ((s)->tv_sec == (t)->tv_sec ? \
