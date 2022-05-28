@@ -46,7 +46,8 @@ struct vfscore_file;
 
 /* Set this flag if vfs should not handle position for this file. The
  * file is not seek-able, updating f_offset does not make sense for
- * it */
+ * it 
+ */
 #define UK_VFSCORE_NOPOS ((int) (1 << 0))
 
 struct vfscore_file {

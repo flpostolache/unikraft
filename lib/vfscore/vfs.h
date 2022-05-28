@@ -69,7 +69,7 @@ extern int vfs_debug;
  * per task data
  */
 struct task {
-	char 	    t_cwd[PATH_MAX];	/* current working directory */
+	char	    t_cwd[PATH_MAX];	/* current working directory */
 	struct vfscore_file *t_cwdfp;		/* directory for cwd */
 };
 

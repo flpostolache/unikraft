@@ -220,7 +220,7 @@ UK_SYSCALL_R_DEFINE(int, mount, const char*, dev, const char*, dir,
 		goto err4;
 
 	if (mp->m_flags & MNT_RDONLY)
-		vp->v_mode &=~S_IWUSR;
+		vp->v_mode &= ~S_IWUSR;
 
 	/*
 	 * Insert to mount list
@@ -322,7 +322,7 @@ sys_pivot_root(const char *new_root, const char *put_old)
 	int error;
 
 	WITH_LOCK(mount_lock) {
-		for (auto&& mp : mount_list) {
+		for (auto && mp : mount_list) {
 			if (!strcmp(mp->m_path, new_root)) {
 				newmp = mp;
 			}
@@ -333,7 +333,7 @@ sys_pivot_root(const char *new_root, const char *put_old)
 		if (!newmp || !oldmp || newmp == oldmp) {
 			return EINVAL;
 		}
-		for (auto&& mp : mount_list) {
+		for (auto && mp : mount_list) {
 			if (mp == newmp || mp == oldmp) {
 				continue;
 			}
@@ -367,6 +367,7 @@ sys_pivot_root(const char *new_root, const char *put_old)
 UK_LLSYSCALL_R_DEFINE(int, sync)
 {
 	struct mount *mp;
+
 	uk_mutex_lock(&mount_lock);
 
 	/* Call each mounted file system. */
@@ -459,7 +460,8 @@ vfs_busy(struct mount *mp)
 {
 	/* The m_count is not really checked anywhere
 	 * currently. Atomic is enough. But it could be that obtaining
-	 * mount_lock will be needed in the future */
+	 * mount_lock will be needed in the future
+	 */
 	ukarch_inc(&mp->m_count);
 }
 
@@ -472,7 +474,8 @@ vfs_unbusy(struct mount *mp)
 {
 	/* The m_count is not really checked anywhere
 	 * currently. Atomic is enough. But it could be that obtaining
-	 * mount_lock will be needed in the future */
+	 * mount_lock will be needed in the future
+	 */
 	ukarch_dec(&mp->m_count);
 }
 
@@ -493,6 +496,7 @@ void
 vfscore_mount_dump(void)
 {
 	struct mount *mp;
+
 	uk_mutex_lock(&mount_lock);
 
 	uk_pr_debug("vfscore_mount_dump\n");
