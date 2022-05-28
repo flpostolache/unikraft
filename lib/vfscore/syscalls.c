@@ -71,7 +71,7 @@ open_no_follow_chk(char *path)
 
 	error = lookup(path, &ddp, &name);
 	if (error) {
-		return (error);
+		return error;
 	}
 
 	error = namei_last_nofollow(path, ddp, &dp);
@@ -244,6 +244,7 @@ sys_read(struct vfscore_file *fp, const struct iovec *iov, size_t niov,
 {
 	int error = 0;
 	struct iovec *copy_iov;
+
 	if ((fp->f_flags & UK_FREAD) == 0)
 		return EBADF;
 
@@ -294,11 +295,13 @@ sys_write(struct vfscore_file *fp, const struct iovec *iov, size_t niov,
 {
 	struct iovec *copy_iov;
 	int error = 0;
+
 	if ((fp->f_flags & UK_FWRITE) == 0)
 		return EBADF;
 
 	size_t bytes = 0;
 	const struct iovec *iovp = iov;
+
 	for (unsigned i = 0; i < niov; i++) {
 		if (iovp->iov_len > IOSIZE_MAX - bytes) {
 			return EINVAL;
@@ -346,13 +349,14 @@ sys_lseek(struct vfscore_file *fp, off_t off, int type, off_t *origin)
 				fp, (unsigned int)off, type));
 
 	if (!fp->f_dentry) {
-	    // Linux doesn't implement lseek() on pipes, sockets, or ttys.
-	    // In OSV, we only implement lseek() on regular files, backed by vnode
-	    return ESPIPE;
+		// Linux doesn't implement lseek() on pipes, sockets, or ttys.
+		// In OSV, we only implement lseek() on regular files, backed by vnode
+		return ESPIPE;
 	}
 
 	vp = fp->f_dentry->d_vnode;
 	int error = EINVAL;
+
 	vn_lock(vp);
 	switch (type) {
 	case SEEK_CUR:
@@ -684,6 +688,7 @@ static int
 has_trailing(const char *path, char ch)
 {
 	size_t len = strlen(path);
+
 	return len && path[len - 1] == ch;
 }
 
@@ -721,13 +726,13 @@ sys_rename(char *src, char *dest)
 
 	error = lookup(src, &ddp1, &sname);
 	if (error != 0) {
-		return (error);
+		return error;
 	}
 
 	error = namei_last_nofollow(src, ddp1, &dp1);
 	if (error != 0) {
 		drele(ddp1);
-		return (error);
+		return error;
 	}
 
 	vp1 = dp1->d_vnode;
@@ -816,9 +821,9 @@ sys_rename(char *src, char *dest)
 
 	/* Source and destination directions should be writable) */
 	if ((error = vn_access(dvp1, VWRITE)) != 0)
-	    goto err3;
+		goto err3;
 	if ((error = vn_access(dvp2, VWRITE)) != 0)
-	    goto err3;
+		goto err3;
 
 	/* The source and dest must be same file system */
 	if (dvp1->v_mount != dvp2->v_mount) {
@@ -863,7 +868,7 @@ sys_symlink(const char *oldpath, const char *newpath)
 	char		*name;
 
 	if (oldpath == NULL || newpath == NULL) {
-		return (EFAULT);
+		return EFAULT;
 	}
 
 	DPRINTF(VFSDB_SYSCALL, ("sys_link: oldpath=%s newpath=%s\n",
@@ -874,7 +879,7 @@ sys_symlink(const char *oldpath, const char *newpath)
 
 	error = task_conv(t, newpath, VWRITE, np);
 	if (error != 0) {
-		return (error);
+		return error;
 	}
 
 	/* parent directory for new path must exist */
@@ -898,6 +903,7 @@ sys_symlink(const char *oldpath, const char *newpath)
 
 	/* oldpath may not be const char * to VOP_SYMLINK - need to copy */
 	size_t tocopy;
+
 	tocopy = strlcpy(op, oldpath, PATH_MAX);
 	if (tocopy >= PATH_MAX - 1) {
 		error = ENAMETOOLONG;
@@ -992,7 +998,7 @@ sys_unlink(char *path)
 
 	error = lookup(path, &ddp, &name);
 	if (error != 0) {
-		return (error);
+		return error;
 	}
 
 	error = namei_last_nofollow(path, ddp, &dp);
@@ -1015,8 +1021,8 @@ sys_unlink(char *path)
 
 	vn_lock(ddp->d_vnode);
 	if ((error = vn_access(ddp->d_vnode, VWRITE)) != 0) {
-	    vn_unlock(ddp->d_vnode);
-	    goto out;
+		vn_unlock(ddp->d_vnode);
+		goto out;
 	}
 	error = VOP_REMOVE(ddp->d_vnode, vp, name);
 	vn_unlock(ddp->d_vnode);
@@ -1095,7 +1101,7 @@ int sys_lstat(char *path, struct stat *st)
 
 	error = lookup(path, &ddp, &name);
 	if (error) {
-		return (error);
+		return error;
 	}
 
 	error = namei_last_nofollow(path, ddp, &dp);
@@ -1216,19 +1222,19 @@ sys_readlink(char *path, char *buf, size_t bufsize, ssize_t *size)
 	*size = 0;
 	error = lookup(path, &ddp, &name);
 	if (error) {
-		return (error);
+		return error;
 	}
 
 	error = namei_last_nofollow(path, ddp, &dp);
 	if (error) {
 		drele(ddp);
-		return (error);
+		return error;
 	}
 
 	if (dp->d_vnode->v_type != VLNK) {
 		drele(dp);
 		drele(ddp);
-		return (EINVAL);
+		return EINVAL;
 	}
 	vec.iov_base	= buf;
 	vec.iov_len	= bufsize;
@@ -1248,11 +1254,11 @@ sys_readlink(char *path, char *buf, size_t bufsize, ssize_t *size)
 	drele(ddp);
 
 	if (error) {
-		return (error);
+		return error;
 	}
 
 	*size = bufsize - uio.uio_resid;
-	return (0);
+	return 0;
 }
 
 /*
@@ -1295,6 +1301,7 @@ sys_utimes(char *path, const struct timeval *times, int flags)
 
 	if (flags & AT_SYMLINK_NOFOLLOW) {
 		struct dentry *ddp;
+
 		error = lookup(path, &ddp, NULL);
 		if (error) {
 			return error;
@@ -1355,7 +1362,7 @@ sys_utimensat(int dirfd, const char *pathname, const struct timespec times[2], i
 	struct dentry *dp;
 
 	/* utimensat should return ENOENT when pathname is empty */
-	if(pathname && pathname[0] == 0)
+	if (pathname && pathname[0] == 0)
 		return ENOENT;
 
 	if (flags && !(flags & AT_SYMLINK_NOFOLLOW))
@@ -1496,6 +1503,7 @@ sys_chmod(const char *path, mode_t mode)
 {
 	int error;
 	struct dentry *dp;
+
 	DPRINTF(VFSDB_SYSCALL, ("sys_chmod: path=%s\n", path));
 	error = namei(path, &dp);
 	if (error)
@@ -1513,6 +1521,7 @@ int
 sys_fchmod(int fd, mode_t mode)
 {
 	struct vfscore_file *f = vfscore_get_file(fd);
+
 	if (!f)
 		return EBADF;
 	// Posix is ambivalent on what fchmod() should do on an fd that does not

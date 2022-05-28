@@ -109,7 +109,8 @@ struct vattr {
 /* struct vattr is used to consolidate multiple types of file
  * attributes for passing them as function parameters. Macros bellow
  * are selectors, of what types of attributes are valid in particular
- * struct vattr*/
+ * struct vattr
+ */
 #define	AT_TYPE		0x00001
 #define	AT_MODE		0x00002
 #define	AT_UID		0x00004

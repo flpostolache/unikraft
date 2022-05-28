@@ -134,10 +134,10 @@ vn_path(struct vnode *vp)
 	struct dentry *dp;
 
 	if (uk_list_empty(&vp->v_names) == 1) {
-		return (" ");
+		return " ";
 	}
 	dp = uk_list_first_entry(&vp->v_names, struct dentry, d_names_link);
-	return (dp->d_path);
+	return dp->d_path;
 }
 #endif
 
@@ -235,7 +235,7 @@ vput(struct vnode *vp)
 	VNODE_LOCK();
 	vp->v_refcnt--;
 	if (vp->v_refcnt > 0) {
-	    VNODE_UNLOCK();
+		VNODE_UNLOCK();
 		vn_unlock(vp);
 		return;
 	}
@@ -405,6 +405,7 @@ vn_setmode(struct vnode *vp, mode_t new_mode)
 	vn_lock(vp);
 	vp->v_mode = new_mode;
 	int error = VOP_SETATTR(vp, &vattr);
+
 	vn_unlock(vp);
 	return error;
 }
