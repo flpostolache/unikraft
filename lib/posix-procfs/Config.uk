@@ -1,0 +1,2 @@
+menuconfig LIBPOSIX_PROCFS
+	bool "posix-procfs: Support for procfs filesystem"
